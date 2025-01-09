@@ -5,7 +5,7 @@ type UploadStatus = "idle" | "uploading" | "success" | "error";
 const FileUpload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<UploadStatus>("idle");
-
+  const [uploadProgress, setUploadProress] = useState(0);
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
       setFile(e.target.files[0]);
@@ -21,8 +21,7 @@ const FileUpload = () => {
     formData.append("file", file);
 
     try {
-      
-      const res =  await fetch("https://httpbin.org/post", {
+      const res = await fetch("https://httpbin.org/post", {
         method: "POST",
         headers: {
           "Content-Type": "multipart/form-data",
@@ -30,10 +29,18 @@ const FileUpload = () => {
         body: file,
       });
 
-      console.log(res)
-      setStatus("success")
+      /**
+       * onUploadProgress: (progressEvent)=>{
+       * const progress - proressEvent.total ? Math.rounde((progressEvent.loaded * 100)/ progressEvent.total): 0 ;
+       * setUploadProgress (progress)
+       * }
+       *
+       */
+
+      console.log(res);
+      setStatus("success");
     } catch {
-        setStatus("error")
+      setStatus("error");
     }
   }
   return (
@@ -53,20 +60,16 @@ const FileUpload = () => {
           <p>Type : {file.type}</p>
         </div>
       )}
-      {file && status !== "uploading" && <button  onClick={handleFileUpload}>Upload</button>}
+      {file && status !== "uploading" && (
+        <button onClick={handleFileUpload}>Upload</button>
+      )}
 
       {status === "error" && (
         <p style={{ color: "red" }}>Upload failed. Please try again</p>
       )}
 
-      
-
-      {status === "success" && (
-        <p style={{ color: "green" }}>Success</p>
-      )}
-      {status === "uploading" && (
-        <p style={{ color: "green" }}>Uploading</p>
-      )}
+      {status === "success" && <p style={{ color: "green" }}>Success</p>}
+      {status === "uploading" && <p style={{ color: "green" }}>Uploading</p>}
     </div>
   );
 };
